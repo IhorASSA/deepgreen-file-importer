@@ -1,0 +1,30 @@
+#+TITLE: DeepGreen ArcGis v0.1
+#+AUTHOR: Arsen A. Hutsal
+#+EMAIL: aahutsal@gmail.com
+#+LANGUAGE: en
+#+LABEL: DeepGreen ArcGis
+
+* Modules
+  1. Data Fetch, Review and Store Module (FRSM).
+
+#+begin_src plantuml :file ./docs/images/1.png :exports results
+together {
+  package "DeepGreen" {
+  [Image processing service] as IS
+  [FTP server] as FTP
+
+  database "PostgreSQL Database" as DB
+}
+
+  [Data Fetch Review and Store Module] as FRSM
+
+
+  IS --> FTP: Publish processed\nimage data (GeoJSON format)
+
+  FRSM --> FTP: Fetches data periodically
+  FRSM --> DB: Stores processed data rows to database
+
+}
+#+end_src
+#+RESULTS:
+[[file:./docs/images/1.png]]
