@@ -5,26 +5,48 @@
 #+LABEL: DeepGreen ArcGis
 
 * Modules
-  1. Data Fetch, Review and Store Module (FRSM).
 
-#+begin_src plantuml :file ./docs/images/1.png :exports results
-together {
-  package "DeepGreen" {
-  [Image processing service] as IS
-  [FTP server] as FTP
+** Data Fetch, Review and Store Module (FRSM).
 
-  database "PostgreSQL Database" as DB
-}
+ #+begin_src plantuml :file ./docs/images/1.png :exports results
 
-  [Data Fetch Review and Store Module] as FRSM
+   package "DeepGreen" {
+   cloud "Image Processing Service" as IS
+   [FTP server] as FTP
+
+   database "PostgreSQL Database" as DB
+ }
+
+   [Data Fetch Review and Store Module] as FRSM
 
 
-  IS --> FTP: Publish processed\nimage data (GeoJSON format)
+   IS --> FTP: Publish processed\nimage data (GeoJSON format)
 
-  FRSM --> FTP: Fetches data periodically
-  FRSM --> DB: Stores processed data rows to database
+   FRSM --> FTP: Fetches data periodically
+   FRSM --> DB: Stores processed data rows to database
 
-}
-#+end_src
-#+RESULTS:
-[[file:./docs/images/1.png]]
+
+ #+end_src
+ #+RESULTS:
+ [[file:./docs/images/1.png]]
+
+** Push Notifications Module
+#+begin_src plantuml :file ./docs/images/2.png :exports results
+
+   package "DeepGreen" {
+
+   database "PostgreSQL Database" as DB
+   }
+
+   [Data Fetch Review and Store Module] as FRSM
+   [Push Notifications Module] as PNM
+   actor "System User" as U
+
+
+   FRSM --> DB: Stores processed data rows to database
+   PNM --> DB: Fetches newly inserted rows\nand sends notifications to users
+   PNM -> U: Notifies
+
+ #+end_src
+ #+RESULTS:
+ [[file:./docs/images/2.png]]
