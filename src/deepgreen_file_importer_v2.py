@@ -154,11 +154,11 @@ def parse_response(response, result):
       response_data = response.get('data', [{}])
       if response_data:
           _static_info = response_data[0].get('static', COMMA_LIST).split(',')
-          if _static_info != COMMA_LIST and len(_static_info) == len(static_info):
+          if _static_info != COMMA_LIST: # and len(_static_info) == len(static_info):
               static_info = [item.strip() for item in _static_info]
 
           _cutting_info = response_data[0].get('cutting', STRONG_LIST).split('<strong>')
-          if _cutting_info != STRONG_LIST and len(_cutting_info) == len(cutting_info):
+          if _cutting_info != STRONG_LIST: # and len(_cutting_info) == len(cutting_info):
               cutting_info = [item.replace('</br>', '').replace('<br>', '').replace('</strong>', '').strip()
                               for item in _cutting_info]
               # if cutting_info[1] != '' and cutting_info[1].find('Закрита') == -1:
@@ -363,8 +363,8 @@ gdf_enriched_centroid.head(3)
 
 """
 
-TABLE_NAME='pg_deepgreen_demo_arsen'
-# TABLE_NAME='spatial_data'
+# TABLE_NAME='pg_deepgreen_demo_arsen'
+TABLE_NAME='spatial_data'
 save_to_postgres(gdf_enriched, table_name=TABLE_NAME)
 print('Data is saved. Please review the table [{}]'.format(TABLE_NAME))
 
