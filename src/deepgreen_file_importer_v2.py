@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 """DeepGreen-DEMO-ver2
 
@@ -9,8 +10,8 @@ Original file is located at
 ### Installation Project Libraries
 """
 
-!pip install SQLAlchemy GeoAlchemy2 geopandas PyDrive psycopg2 --upgrade
-!pip install geopandas oauth2client --upgrade
+# !pip install SQLAlchemy GeoAlchemy2 geopandas PyDrive psycopg2 --upgrade
+# !pip install geopandas oauth2client --upgrade
 
 """## Import Project Libraries
 
@@ -20,8 +21,6 @@ Original file is located at
 """
 
 import geopandas as gpd
-import folium
-import ftplib
 import json
 import logging as logger
 import os
@@ -30,16 +29,11 @@ import pandas as pd
 import psutil
 import requests
 import time
+import sys
 
-from folium import Marker, GeoJson
-from folium.plugins import HeatMap
 from geopandas import GeoSeries
-from google.colab import auth
 from itertools import islice
 from multiprocessing import Pool
-from oauth2client.client import GoogleCredentials
-from pydrive.auth import GoogleAuth
-from pydrive.drive import GoogleDrive
 from shapely.geometry import Polygon, Point, MultiPolygon
 from sqlalchemy import create_engine
 
@@ -105,44 +99,7 @@ def setup_drive():
   gauth.credentials = GoogleCredentials.get_application_default()
   return GoogleDrive(gauth)
 
-def prepare_local_path():
-  # choose a local (colab) directory to store the data.
-  local_download_path = os.path.expanduser('./')
-  try:
-    os.makedirs(local_download_path)
-  except Exception as err:
-    if err.errno != 17:
-      print(help(err))
-  return local_download_path
 
-def download_files(id_list):
-  drive = setup_drive()
-  local_download_path = prepare_local_path()
-
-  for id_file in id_list:
-    # Create & download by id.
-    try:
-      downloaded = drive.CreateFile({'id':id_file})
-      print('title: {}, id: {}'.format(downloaded['title'], downloaded['id']))
-      file_name = os.path.join(local_download_path, downloaded['title'])
-      print('downloading to {}'.format(file_name))
-      downloaded.GetContentFile(file_name)
-    except Exception as err:
-      print('[download_files]: file_name={}'.format(id_file), err)
-
-def download_from_ftp(file_list):
-  ftp_session = ftplib.FTP('194.44.29.184','ftp_exchange','rSac04jEr2ZuLXp4')
-
-  for file_name in file_list:
-    local_file_name = prepare_local_path() + file_name
-    print('Trying download {}-file from FTP'.format(file_name))
-    ftp_session.retrbinary(
-        "RETR " + file_name,
-        open(local_file_name, 'wb').write
-    )
-    print('Downloaded {}-file from FTP to local path: {}'.format(file_name, local_file_name))
-
-  ftp_session.quit()
 
 def make_sub_lists(list_in, chunk_size):
     list_in = iter(list_in)
@@ -173,6 +130,7 @@ def custom_draw(x):
 
 def save_to_postgres(gdf, table_name):
   engine = create_engine(
+      # "postgresql://deepgreen:HJKj4oiIUs-8@ec2-52-204-66-46.compute-1.amazonaws.com:5432/deepgreen"
       "postgresql://deepgreen:deepgreen2021MT!@ec2-15-188-127-126.eu-west-3.compute.amazonaws.com:5432/deepgreen"
   )
   gdf.to_postgis(name=table_name, con=engine, if_exists='replace', index=True)
@@ -347,44 +305,20 @@ def iterate_over_centroids(gdf, epsg=3857, limit=5, chunk_size=7):
 """## Main Flow Execution
 
 ---
-
-### 1. Download file from FTP
 """
+# file_for_processing = sys.argv[1]
+file_for_processing = "/home/archer/dev/deepgreen-camel-clj/target/2020_09_03.geojson"
 
-file_for_processing_1 = '2021_04_05.geojson'
-file_for_processing_2 = '2021_04_12.geojson'
-download_from_ftp([file_for_processing_1, file_for_processing_2])
 
-# Alternative - download from GDrive for demo purposes
-# download_files(
-    # [
-    #  '1T2YJJwQLHIM5SZtkGjUfgNLFSrbFJ_1m',
-    #  '17r3hZkNtuheIAZuXKCnhjHm1L9MHFkUq',
-    #  '1KLxqfuwrBWbv65l2EaxlcZptKfZ3zeqb',
-    #  '13_FPu_kYd5UngZ486B5hv0D_-7XboM3n'
-    #  ]
-# )
+total_requests_to_process = -1
 
-"""### 2. Read and process downloaded *file*"""
-
-# TEST
-# file_datetime = get_datetime_from_file(file_for_processing_2)
-# file_datetime
-
-total_requests_to_process = 500
-
-gdf_aug = gpd.read_file(file_for_processing_1).to_crs(3857).tail(total_requests_to_process)
-file_datetime_1 = get_datetime_from_file(file_for_processing_1)
-gdf_aug.loc[:, 'datetime'] = file_datetime_1
-
-gdf_sep = gpd.read_file(file_for_processing_2).to_crs(3857).tail(total_requests_to_process)
-file_datetime_2 = get_datetime_from_file(file_for_processing_2)
-gdf_sep.loc[:, 'datetime'] = file_datetime_2
+gdf = gpd.read_file(file_for_processing).to_crs(3857).tail(total_requests_to_process)
+file_datetime = get_datetime_from_file(file_for_processing)
+gdf.loc[:, 'datetime'] = file_datetime
 
 gdf = pd.concat(
     [
-      gdf_aug,
-      gdf_sep
+      gdf
     ],
     axis='rows',
     ignore_index=True
@@ -429,78 +363,8 @@ gdf_enriched_centroid.head(3)
 
 """
 
-save_to_postgres(gdf_enriched, table_name='pg_deepgreen_demo_arsen')
-print('Data is saved. Please review the table [pg_deepgreen_demo_arsen]')
+TABLE_NAME='pg_deepgreen_demo_arsen'
+# TABLE_NAME='spatial_data'
+save_to_postgres(gdf_enriched, table_name=TABLE_NAME)
+print('Data is saved. Please review the table [{}]'.format(TABLE_NAME))
 
-"""### 5. Visualization"""
-
-# Load extra datasets
-# df_point = gpd.read_file('http://www.deepforest.org.ua/geo/point')
-# print(df_point.info())
-# df_point.head(5)
-
-# df_test = gpd.read_file('http://www.deepforest.org.ua/geo/test')
-# print(df_test.info())
-# df_test.head()
-
-map_cache_url = 'https://mapa.ukrforest.com/mapcache/'
-cutting_url = 'https://mapa.ukrforest.com/wms'
-
-_map = folium.Map(
-    # location=[3358337.27, 6503873.82],
-    location=[46.168457, 31.331436],
-    tiles="cartodbpositron",
-    # tiles="OpenStreetMap",
-    crs='EPSG3857',
-    zoom_start=7,
-)
-
-folium.GeoJson(
-    gdf_enriched,
-    name="Cutting",
-    style_function=custom_draw
-).add_to(_map)
-
-folium.GeoJson(
-    gdf_enriched_centroid,
-    name="Cutting-Centroids",
-    #style_function=custom_draw
-).add_to(_map)
-
-# folium.WmsTileLayer(
-#     url=map_cache_url,
-#     name='forests',
-#     layers='forestries',
-#     frm='image/png'
-# ).add_to(m)
-
-folium.WmsTileLayer(
-    url=map_cache_url,
-    name='quarters',
-    layers='quarters',
-    frm='image/jpeg'
-).add_to(_map)
-
-folium.WmsTileLayer(
-    url=map_cache_url,
-    name='sections',
-    layers='sections',
-    frm='image/jpeg'
-).add_to(_map)
-
-folium.LayerControl().add_to(_map)
-_map
-
-# folium.GeoJson(
-#     # gdf,#r'./DeepForest_GeoPoint.json',
-#     df_test.head(50),
-#     name="DeepForest_TEST",
-#     style_function=custom_draw
-# ).add_to(_map)
-
-# folium.GeoJson(
-#     # gdf,#r'./DeepForest_GeoPoint.json',
-#     df_point.head(50),
-#     name="DeepForest_GeoPoint",
-#     style_function=custom_draw
-# ).add_to(_map)
