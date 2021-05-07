@@ -133,7 +133,7 @@ def save_to_postgres(gdf, table_name):
       # "postgresql://deepgreen:HJKj4oiIUs-8@ec2-52-204-66-46.compute-1.amazonaws.com:5432/deepgreen"
       "postgresql://deepgreen:deepgreen2021MT!@ec2-15-188-127-126.eu-west-3.compute.amazonaws.com:5432/deepgreen"
   )
-  gdf.to_postgis(name=table_name, con=engine, if_exists='replace', index=True)
+  gdf.to_postgis(name=table_name, con=engine, if_exists='append', index=True)
 
 def get_datetime_from_file(file_for_processing):
   with open(file_for_processing, 'rb') as fd:
