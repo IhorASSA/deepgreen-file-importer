@@ -130,8 +130,9 @@ def custom_draw(x):
 
 def save_to_postgres(gdf, table_name):
   engine = create_engine(
-      # "postgresql://deepgreen:HJKj4oiIUs-8@ec2-52-204-66-46.compute-1.amazonaws.com:5432/deepgreen"
-      "postgresql://deepgreen:deepgreen2021MT!@ec2-15-188-127-126.eu-west-3.compute.amazonaws.com:5432/deepgreen"
+     # "postgresql://deepgreen:HJKj4oiIUs-8@ec2-52-204-66-46.compute-1.amazonaws.com:5432/deepgreen"
+     "postgresql://deepgreen:deepgreen2021MT!@ec2-15-188-127-126.eu-west-3.compute.amazonaws.com:5432/deepgreen"
+    # "postgresql://deepgreen:deepgreen2021MT!@localhost:5432/deepgreen"
   )
   gdf.to_postgis(name=table_name, con=engine, if_exists='append', index=True)
 
@@ -159,8 +160,10 @@ def parse_response(response, result):
 
           _cutting_info = response_data[0].get('cutting', STRONG_LIST).split('<strong>')
           if _cutting_info != STRONG_LIST: # and len(_cutting_info) == len(cutting_info):
-              cutting_info = [item.replace('</br>', '').replace('<br>', '').replace('</strong>', '').strip()
-                              for item in _cutting_info]
+              _cutting_info = [item.replace('</br>', '').replace('<br>', '').replace('</strong>', '').strip() for item in _cutting_info]
+              while len(_cutting_info) != len(cutting_info):
+                _cutting_info.append('')
+              cutting_info = _cutting_info
               # if cutting_info[1] != '' and cutting_info[1].find('Закрита') == -1:
               #     print(cutting_info)
   except Exception as err:
@@ -336,7 +339,7 @@ gdf_enriched = iterate_over_centroids(
     gdf,
     epsg=3857,
     limit=total_requests_to_process,
-    chunk_size=25
+    chunk_size=50
 )
 
 gdf_enriched.info()
