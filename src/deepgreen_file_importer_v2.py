@@ -7,6 +7,7 @@ from deepgreen_utils import *
 import sys
 
 def load_geojson_files(input_files):
+
     result = gpd.GeoDataFrame()
     for file_name in input_files:
         _gdf = gpd.read_file(file_name).to_crs(EPSG)
@@ -91,6 +92,3 @@ def start():
 
 if __name__ == '__main__':
     start()
-
-
-
