@@ -49,20 +49,26 @@ COL_END = ['url', 'coords',	'raw_response', 'error_msg']
 
 CODE_INT_LEGAL = 1
 CODE_TEXT_LEGAL = 'Легальна діюча'
+CODE_TEXT_LEGAL_NEW = 'Легальна діюча рубка'
 CODE_INT_LEGAL_CLOSED = 2
 CODE_TEXT_LEGAL_CLOSED = 'Легальна закрита'
+CODE_TEXT_LEGAL_CLOSED_NEW = 'Легальна закрита рубка'
 CODE_INT_LEGAL_NOT_STARTED = 3
 CODE_TEXT_LEGAL_NOT_STARTED = 'Легальна не розпочата'
+CODE_TEXT_LEGAL_NOT_STARTED_NEW = 'Легальна не розпочата рубка'
 CODE_INT_NOT_LEGAL = 4
 CODE_TEXT_NOT_LEGAL = 'Нелегальна відсутній лісорубний'
+CODE_TEXT_NOT_LEGAL_NEW = 'Нелегальна відсутній лісорубний квиток'
 CODE_INT_NOT_IDENTIFIED = 5
 CODE_TEXT_NOT_IDENTIFIED = 'Проблеми ідентифікації місцерозташування'
+CODE_TEXT_NOT_IDENTIFIED_NEW = 'Проблеми ідентифікації місцерозташування рубки'
 CODE_INT_UNKNOWN_RUBKA = 6
 CODE_TEXT_UNKNOWN_RUBKA = 'Рубка - невідомий сценарій'
 CODE_INT_PARSER_ERROR = 7
 CODE_TEXT_PARSER_ERROR = 'DeepGreen Parser Error'
 CODE_INT_API_ERROR = 8
 CODE_TEXT_API_ERROR = 'UkrForest API Error'
+CODE_TEXT_API_ERROR_NEW = 'UkrForest API Error'
 CODE_INT_UNKNOWN = 9
 CODE_TEXT_UNKNOWN = 'Unknown Error'
 
