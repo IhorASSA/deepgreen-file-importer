@@ -6,6 +6,7 @@ from deepgreen_utils import *
 
 import sys
 
+
 def load_geojson_files(input_files):
 
     result = gpd.GeoDataFrame()
@@ -31,6 +32,32 @@ def load_geojson_files(input_files):
     return result
 
 
+def load_cached_files():
+    import pickle5 as pickle
+    import pandas as pd
+
+    PATH = r'D:\WORK\Outsource\М1\deepgreen-file-importer\data'
+
+    with open(os.path.join(PATH, 'result.pkl'), "rb") as fh:
+        df_1 = pickle.load(fh)
+    with open(os.path.join(PATH, 'geo_all_lviv.pkl'), "rb") as fh:
+        df_2 = pickle.load(fh)
+    result = pd.concat(
+        [
+            df_1, df_2
+        ],
+        axis='rows',
+        ignore_index=True
+    )
+    # Normalize the index
+    result = result.sort_values(by='datetime')
+    result.index = pd.Index([i for i in range(1, result.shape[0] + 1)])
+
+    print(result.shape, result.datetime.unique(), result.head(2).T)
+
+    return result
+
+
 def load_data(from_cache=False):
     """
     Load data (polygons) to process and enrich via crawling
@@ -42,7 +69,7 @@ def load_data(from_cache=False):
     # total_requests_to_process = -1
     # PATH = 'D:\WORK\Outsource\М1\deepgreen-file-importer\data'
     if from_cache:
-        return pd.read_pickle(os.path.join(PATH, 'result.pkl'))
+        return load_cached_files()
     else:
         return load_geojson_files(
             input_files=[
@@ -77,6 +104,8 @@ def save_data(gdf):
     """
     save_to_postgres(gdf, table_name=PG_TABLE_NAME)
     print('Data is saved. Please review the table [{}]'.format(PG_TABLE_NAME))
+    gdf.to_pickle(r'../data/geo_tmp.pkl')
+
 
 
 def start():
@@ -88,6 +117,16 @@ def start():
     gdf = load_data(from_cache=False)
     gdf_enriched = enrich_data(gdf)
     save_data(gdf_enriched)
+
+
+def load_and_save():
+    """
+    Quick boostrap and save the enriched data
+    :return: Boolean. True - success, False - error is happened
+    """
+    gdf = load_data(from_cache=True)
+    gdf = normalize_data(gdf)
+    save_data(gdf)
 
 
 if __name__ == '__main__':

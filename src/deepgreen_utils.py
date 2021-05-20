@@ -14,7 +14,7 @@ from itertools import islice
 from multiprocessing import Pool
 from shapely.geometry import Polygon, Point, MultiPolygon
 from sqlalchemy import create_engine
-from deepgreen_const import * 
+from deepgreen_const import *
 
 
 def get_datetime_from_file(file_for_processing):
@@ -22,7 +22,7 @@ def get_datetime_from_file(file_for_processing):
     json_file = json.load(fd)
 
   # raise without excuse :) if any
-  return pd.to_datetime(json_file.get('name', '').replace('_', '-'))
+  return pd.to_datetime(json_file.get('name', '').replace('_', '-').replace('lviv-', ''))
 
 
 def make_sub_lists(list_in, chunk_size):
