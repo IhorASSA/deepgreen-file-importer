@@ -9,7 +9,6 @@ logger.basicConfig(
 )
 logger.info("This is a test log ..")
 
-
 EPSG = 3857
 URL = 'https://lk.ukrforest.com/map/get-point-info?point=[{},{}]'
 
@@ -72,9 +71,9 @@ CODE_TEXT_API_ERROR_NEW = 'UkrForest API Error'
 CODE_INT_UNKNOWN = 9
 CODE_TEXT_UNKNOWN = 'Unknown Error'
 
-# PG_TABLE_NAME='pg_deepgreen_demo_arsen'
-# PG_DB_CONNECTION_STRING="postgresql://deepgreen:HJKj4oiIUs-8@ec2-52-204-66-46.compute-1.amazonaws.com:5432/deepgreen"
-#PG_DB_CONNECTION_STRING="postgresql://deepgreen:deepgreen2021MT!@ec2-15-188-127-126.eu-west-3.compute.amazonaws.com:5432/deepgreen"
-#PG_DB_CONNECTION_STRING="postgresql://deepgreen:deepgreen2021MT!@localhost:5432/deepgreen"
-PG_DB_CONNECTION_STRING="postgresql://deepgreen:deepgreen2021MT!@deepgreen.ccameumzy8wt.us-east-1.rds.amazonaws.com:5432/deepgreen"
-PG_TABLE_NAME = 'spatial_data_new'
+from pydotenvs import load_env, load_env_object
+env = load_env_object()
+
+
+PG_DB_CONNECTION_STRING = env['PG_DB_CONNECTION_STRING']
+PG_TABLE_NAME = env['PG_TABLE_NAME']
