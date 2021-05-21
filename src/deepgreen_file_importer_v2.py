@@ -6,7 +6,6 @@ from deepgreen_utils import *
 
 import sys
 
-
 def load_geojson_files(input_files):
 
     result = gpd.GeoDataFrame()
@@ -104,7 +103,11 @@ def save_data(gdf):
     """
     save_to_postgres(gdf, table_name=PG_TABLE_NAME)
     print('Data is saved. Please review the table [{}]'.format(PG_TABLE_NAME))
-    gdf.to_pickle(r'../data/geo_tmp.pkl')
+
+    try:
+        gdf.to_pickle(r'../data/geo_tmp.pkl')
+    except Exception as err:
+        print('Cache not saved, directory ../data not found')
 
 
 

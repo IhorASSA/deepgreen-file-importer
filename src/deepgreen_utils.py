@@ -43,6 +43,7 @@ def make_centroid_sub_lists(gdf, chunk_size):
 
 
 def save_to_postgres(gdf, table_name):
+  print("Creating engine using URL:" + PG_DB_CONNECTION_STRING)
   engine = create_engine(PG_DB_CONNECTION_STRING)
   try:
     engine.execute('create extension postgis')
