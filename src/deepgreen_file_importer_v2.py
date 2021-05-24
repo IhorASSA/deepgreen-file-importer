@@ -73,7 +73,8 @@ def load_data(from_cache=False):
         return load_geojson_files(
             input_files=[
                 # file_for_processing
-                os.path.join(PATH, sys.argv[1]),
+                # os.path.join(PATH, sys.argv[1]),
+                sys.argv[1]
                 # os.path.join(PATH, '2021_03_01.geojson'),
                 # os.path.join(PATH, '2021_04_05.geojson'),
                 # os.path.join(PATH, '2021_04_12.geojson')
