@@ -12,7 +12,7 @@ munch==2.5.0
 numpy==1.20.3
 pandas==1.2.4
 psutil==5.7.3
-pydotenvs==0.1.4
+python-dotenv==0.17.1
 pyproj==3.0.1
 python-dateutil==2.8.1
 pytz==2021.1

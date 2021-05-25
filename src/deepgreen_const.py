@@ -71,9 +71,13 @@ CODE_TEXT_API_ERROR_NEW = 'UkrForest API Error'
 CODE_INT_UNKNOWN = 9
 CODE_TEXT_UNKNOWN = 'Unknown Error'
 
-from pydotenvs import load_env, load_env_object
-env = load_env_object()
+import os
+from dotenv import load_dotenv,dotenv_values
 
+path = ".env" + (("." + os.getenv('APP_ENV')) if os.getenv('APP_ENV') else "")
+#print("Loading config from path:" + path)
+env = dotenv_values(path)
+#print(env)
 
 PG_DB_CONNECTION_STRING = env['PG_DB_CONNECTION_STRING']
 PG_TABLE_NAME = env['PG_TABLE_NAME']
