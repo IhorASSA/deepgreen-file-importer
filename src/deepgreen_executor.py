@@ -37,7 +37,7 @@ def send_requests(polygon_flatten, rules_strategy='ver03'):
 def execute_enrichment(gdf, epsg=EPSG, limit=5, chunk_size=7):
     start = time.time()
     num_cpus = psutil.cpu_count(logical=False)
-    process_pool = Pool(processes=num_cpus)
+    process_pool = Pool(processes=num_cpus * 10)
 
     gdf_new = gdf.to_crs(epsg=epsg)
     print(gdf_new.crs)
