@@ -120,6 +120,7 @@ def start():
     print(PG_TABLE_NAME)
     gdf = load_data(from_cache=False)
     gdf_enriched = enrich_data(gdf)
+    gdf_enriched = normalize_data(gdf_enriched)
     save_data(gdf_enriched)
 
 
