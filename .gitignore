@@ -2,3 +2,5 @@
 *.pkl
 *.zip
 /src/__pycache__/*.pyc
+*.~undo-tree~
+*.geojson

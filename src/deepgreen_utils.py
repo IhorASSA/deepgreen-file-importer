@@ -39,7 +39,9 @@ def make_centroid_sub_lists(gdf, chunk_size):
                 gdf.centroid.y.values)
         )
     )
-    return make_sub_lists(centroids, chunk_size)
+    sl = make_sub_lists(centroids, chunk_size)
+    print(sl)
+    return sl
 
 
 def save_to_postgres(gdf, table_name):
